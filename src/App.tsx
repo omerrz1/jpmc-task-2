@@ -8,6 +8,7 @@ import './App.css';
  */
 interface IState {
   data: ServerRespond[],
+  showGraph: boolean,
 }
 
 /**
@@ -19,9 +20,12 @@ class App extends Component<{}, IState> {
     super(props);
 
     this.state = {
-      // data saves the server responds.
-      // We use this state to parse data down to the child element (Graph) as element property
+      /**data saves the server responds.
+       We use this state to parse data down to the child element
+        (Graph) as element property*/
+
       data: [],
+      showGraph: false,//changing this to hidden because this is the nitial state, we want it to be hidden uuntill the users clicks "start streaming"
     };
   }
 
@@ -29,18 +33,37 @@ class App extends Component<{}, IState> {
    * Render Graph react component with state.data parse as property data
    */
   renderGraph() {
-    return (<Graph data={this.state.data}/>)
+    /**we stored the boolean value of showGraph iside this variable 
+     * to make it a bit more clear
+    */
+
+  //render the graph only if the 'showgraph' property is set to 'true'
+    if (this.state.showGraph){
+      return (<Graph data={this.state.data}/>)
+    }
+    
   }
 
   /**
    * Get new data from server and update the state with the new data
    */
   getDataFromServer() {
-    DataStreamer.getData((serverResponds: ServerRespond[]) => {
-      // Update the state by creating a new array of data that consists of
-      // Previous data in the state and the new data from server
-      this.setState({ data: [...this.state.data, ...serverResponds] });
-    });
+    //we start from the '0' on the 'x' axsis
+    let X=0;
+    const interval = setInterval(()=>{
+      DataStreamer.getData((serverResponds: ServerRespond[])=>{
+        this.setState({
+          data: serverResponds,
+          showGraph: true,
+        });
+      });
+      // we increment the value of 'x' to keep the graph moving
+      X++;
+      
+      if (X>1000){
+        clearInterval(interval);
+      }
+    }, 100);
   }
 
   /**
