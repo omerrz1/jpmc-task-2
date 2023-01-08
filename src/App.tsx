@@ -33,10 +33,7 @@ class App extends Component<{}, IState> {
    * Render Graph react component with state.data parse as property data
    */
   renderGraph() {
-    /**we stored the boolean value of showGraph iside this variable 
-     * to make it a bit more clear
-    */
-
+    
   //render the graph only if the 'showgraph' property is set to 'true'
     if (this.state.showGraph){
       return (<Graph data={this.state.data}/>)
